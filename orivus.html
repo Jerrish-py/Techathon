@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" class=""> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Pulse - Enhanced Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        // Apply dark mode immediately to prevent flash of light mode
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .main-content-bg {
+            background-color: #f7f9fc;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4dbe5' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .dark .main-content-bg {
+            background-color: #111827;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234b5563' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .sidebar-icon-glow {
+            transition: all 0.3s ease;
+        }
+        .sidebar-icon-glow.active, .sidebar-icon-glow:hover {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.7);
+            background-color: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        /* Custom scrollbar for dark theme */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+        /* Dark mode toggle switch styling */
+        .toggle-checkbox:checked { right: 0; border-color: #68D391; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #68D391; }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-800">
+    <div class="flex h-screen text-gray-800 dark:text-gray-200">
+        <nav class="hidden md:flex flex-col items-center w-20 bg-gray-900 text-white py-6 space-y-6">
+            <div class="w-10 h-10 flex items-center justify-center bg-blue-500 rounded-full font-bold text-lg">CP</div>
+            
+            <div class="flex flex-col items-center space-y-4">
+                <a href="#" class="p-3 rounded-xl border border-transparent sidebar-icon-glow active" title="Dashboard" aria-label="Dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </a>
+                <a href="#" class="p-3 rounded-xl border border-transparent sidebar-icon-glow" title="Report Issue" aria-label="Report Issue">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                </a>
+                <a href="#" class="p-3 rounded-xl border border-transparent sidebar-icon-glow" title="My Reports" aria-label="My Reports">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 2H8.6c-.4 0-.8.2-1.1.5-.3.3-.5.7-.5 1.1V21c0 .4.2.8.5 1.1.3.3.7.5 1.1.5h7.8c.4 0 .8-.2 1.1-.5.3-.3.5-.7.5-1.1V6.5L15.5 2z"/><path d="M15 2v5h5"/><path d="M10 16h4"/><path d="M10 12h7"/></svg>
+                </a>
+            </div>
+
+            <div class="mt-auto flex flex-col items-center space-y-6">
+                <div id="theme-toggle" class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in cursor-pointer">
+                    <div class="toggle-switch relative block w-10 h-6 bg-gray-600 rounded-full">
+                        <div class="absolute inset-0 flex items-center justify-between px-1.5">
+                            <svg class="w-3 h-3 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                            <svg class="w-3 h-3 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                        </div>
+                        <div id="toggle-button" class="absolute left-0 top-0 w-6 h-6 bg-white rounded-full shadow transition-transform transform duration-300 ease-in-out"></div>
+                    </div>
+                </div>
+
+                <a href="#" title="Profile" aria-label="User Profile">
+                    <img src="https://placehold.co/40x40/6366f1/ffffff?text=JD" alt="User Profile" class="rounded-full">
+                </a>
+            </div>
+        </nav>
+
+        <main class="flex-1 overflow-y-auto main-content-bg">
+            <div class="p-6 md:p-10">
+                <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Campus Pulse Dashboard</h1>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">Active issues and proposed solutions across campus.</p>
+                    </div>
+                    <button id="report-issue-btn" class="mt-4 md:mt-0 flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                        Report New Issue
+                    </button>
+                </header>
+
+                <div id="filters" class="mb-6 flex flex-wrap gap-2">
+                    <button data-filter="all" class="filter-btn px-4 py-1.5 text-sm font-semibold rounded-full shadow-sm transition-colors duration-200 active">All</button>
+                    <button data-filter="maintenance" class="filter-btn px-4 py-1.5 text-sm font-semibold rounded-full shadow-sm transition-colors duration-200">Maintenance</button>
+                    <button data-filter="safety" class="filter-btn px-4 py-1.5 text-sm font-semibold rounded-full shadow-sm transition-colors duration-200">Safety</button>
+                    <button data-filter="it" class="filter-btn px-4 py-1.5 text-sm font-semibold rounded-full shadow-sm transition-colors duration-200">IT</button>
+                </div>
+
+                <div id="issues-grid" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                    <div class="skeleton-card bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden animate-pulse">
+                        <div class="h-48 bg-gray-300 dark:bg-gray-700"></div><div class="p-5"><div class="h-6 rounded bg-gray-300 dark:bg-gray-700 mb-4"></div><div class="h-4 rounded bg-gray-300 dark:bg-gray-700 w-3/4"></div></div>
+                    </div>
+                    <div class="skeleton-card bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden animate-pulse">
+                        <div class="h-48 bg-gray-300 dark:bg-gray-700"></div><div class="p-5"><div class="h-6 rounded bg-gray-300 dark:bg-gray-700 mb-4"></div><div class="h-4 rounded bg-gray-300 dark:bg-gray-700 w-3/4"></div></div>
+                    </div>
+                    <div class="skeleton-card bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden animate-pulse">
+                        <div class="h-48 bg-gray-300 dark:bg-gray-700"></div><div class="p-5"><div class="h-6 rounded bg-gray-300 dark:bg-gray-700 mb-4"></div><div class="h-4 rounded bg-gray-300 dark:bg-gray-700 w-3/4"></div></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="issue-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div id="modal-content" class="relative w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 transform transition-all opacity-0 -translate-y-10">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Report a Campus Issue</h2>
+            <button id="close-modal-btn" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="Close modal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <form class="space-y-6">
+                <div>
+                    <label for="issue-title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Issue Title</label>
+                    <input type="text" id="issue-title" placeholder="e.g., Broken projector in Room 301" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition bg-white dark:bg-gray-700">
+                </div>
+                <div>
+                    <label for="issue-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                    <textarea id="issue-description" rows="4" placeholder="Provide as much detail as possible..." class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition bg-white dark:bg-gray-700"></textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="issue-category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
+                        <select id="issue-category" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition bg-white dark:bg-gray-700">
+                            <option>Maintenance</option>
+                            <option>Safety</option>
+                            <option>IT</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="issue-location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
+                        <input type="text" id="issue-location" placeholder="e.g., Engineering Building, 3rd Floor" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition bg-white dark:bg-gray-700">
+                    </div>
+                </div>
+                <div class="flex justify-end pt-4">
+                    <button type="button" id="cancel-btn" class="px-6 py-2 mr-3 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition">Cancel</button>
+                    <button type="submit" class="px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Mock Data for Issues ---
+        const issues = [
+            { id: 1, title: 'Broken handrail on library stairs', category: 'safety', status: 'Resolved', upvotes: 128, downvotes: 5, solutions: 4, image: 'https://placehold.co/600x400/a78bfa/ffffff?text=Library' },
+            { id: 2, title: 'Wi-Fi unstable in computer lab', category: 'it', status: 'In Progress', upvotes: 94, downvotes: 12, solutions: 11, image: 'https://placehold.co/600x400/f87171/ffffff?text=CompSci+Lab' },
+            { id: 3, title: 'Vending machine on 2nd floor broken', category: 'maintenance', status: 'Reported', upvotes: 45, downvotes: 21, solutions: 7, image: 'https://placehold.co/600x400/60a5fa/ffffff?text=Student+Union' },
+            { id: 4, title: 'Leaky faucet in chemistry building', category: 'maintenance', status: 'Reported', upvotes: 22, downvotes: 2, solutions: 1, image: 'https://placehold.co/600x400/34d399/ffffff?text=Chem+Building' },
+            { id: 5, title: 'Poor lighting near south parking lot', category: 'safety', status: 'In Progress', upvotes: 153, downvotes: 3, solutions: 9, image: 'https://placehold.co/600x400/fbbf24/ffffff?text=Parking+Lot' },
+        ];
+
+        // --- DOM Elements ---
+        const issuesGrid = document.getElementById('issues-grid');
+        const skeletonCards = document.querySelectorAll('.skeleton-card');
+        const filtersContainer = document.getElementById('filters');
+        
+        // --- Theme Toggle Functionality ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const toggleButton = document.getElementById('toggle-button');
+        
+        const applyTheme = (theme) => {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                toggleButton.classList.add('translate-x-4');
+            } else {
+                document.documentElement.classList.remove('dark');
+                toggleButton.classList.remove('translate-x-4');
+            }
+        };
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            const newTheme = isDark ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+        });
+
+        // Initialize theme toggle based on current theme
+        applyTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+
+        // --- Filter Button Styles ---
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            if(btn.classList.contains('active')) {
+                btn.classList.add('bg-blue-500', 'text-white');
+                btn.classList.remove('bg-white', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+            } else {
+                btn.classList.add('bg-white', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+                btn.classList.remove('bg-blue-500', 'text-white');
+            }
+        });
+
+        // --- Issue Card Generation ---
+        const createIssueCard = (issue) => {
+            const statusStyles = {
+                'Resolved': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+                'In Progress': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
+                'Reported': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+            };
+            
+            const card = document.createElement('div');
+            card.className = `issue-card bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden group transform hover:-translate-y-1 transition-transform duration-300`;
+            card.setAttribute('data-category', issue.category);
+
+            card.innerHTML = `
+                <div class="relative h-48">
+                    <img src="${issue.image}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/40"></div>
+                    <div class="absolute top-4 right-4 text-xs font-semibold px-2.5 py-1 rounded-full ${statusStyles[issue.status]}">${issue.status}</div>
+                    <div class="absolute bottom-4 left-4 text-xs text-white bg-black/40 capitalize px-2 py-1 rounded-md">${issue.category}</div>
+                </div>
+                <div class="p-5 flex flex-col h-[calc(100%-12rem)]">
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2">${issue.title}</h3>
+                    <div class="flex-grow flex justify-between items-center text-sm text-gray-500 dark:text-gray-400 mt-4">
+                        <div class="flex items-center space-x-4">
+                            <span class="flex items-center"><svg width="16" height="16" viewBox="0 0 24 24" class="mr-1 text-green-500" fill="currentColor"><path d="M23,10C23,8.89 22.1,8 21,8H14.68L15.64,3.43C15.66,3.33 15.67,3.22 15.67,3.11C15.67,2.7 15.5,2.32 15.23,2.05L14.17,1L7.59,7.58C7.22,7.95 7,8.45 7,9V19A2,2 0 0,0 9,21H18C18.83,21 19.54,20.5 19.84,19.78L22.86,12.73C22.95,12.5 23,12.26 23,12V10M1,21H5V9H1V21Z"></path></svg>${issue.upvotes}</span>
+                            <span class="flex items-center"><svg width="16" height="16" viewBox="0 0 24 24" class="mr-1 text-red-500" fill="currentColor"><path d="M19,15H23V3H19M15,3H1V13.5C1,14.05 1.17,14.55 1.5,14.9L7.58,21L8.5,20.04L7.8,19.34L2.04,13.58C2.03,13.57 2,13.55 2,13.5V5H13L12,9.68L12.09,9.78L13.1,10.79L14.11,9.78L13.1,8.79L14.11,7.78L12.09,5.76C12.37,5.5 12.69,5.27 13,5.07L14.04,4.04L15,5.04L14.04,6.04L15,7.04L13,9.04C13,9.04 12.7,9.31 12.5,9.5L14.5,15H19V3Z"></path></svg>${issue.downvotes}</span>
+                        </div>
+                        <a href="#" class="font-semibold text-sm bg-blue-500 text-white px-3 py-1.5 rounded-md hover:bg-blue-600 transition-colors">View ${issue.solutions} Solutions</a>
+                    </div>
+                </div>
+            `;
+            return card;
+        };
+
+        // --- Data Loading and Filtering ---
+        const loadIssues = (filter = 'all') => {
+            issuesGrid.innerHTML = ''; // Clear existing issues
+            const fragment = document.createDocumentFragment();
+            issues
+                .filter(issue => filter === 'all' || issue.category === filter)
+                .forEach(issue => fragment.appendChild(createIssueCard(issue)));
+            issuesGrid.appendChild(fragment);
+        };
+
+        filtersContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-btn')) {
+                document.querySelector('.filter-btn.active').classList.remove('active');
+                e.target.classList.add('active');
+                
+                // Re-apply styles
+                filterBtns.forEach(btn => {
+                    if(btn.classList.contains('active')) {
+                        btn.classList.add('bg-blue-500', 'text-white');
+                        btn.classList.remove('bg-white', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+                    } else {
+                        btn.classList.add('bg-white', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+                        btn.classList.remove('bg-blue-500', 'text-white');
+                    }
+                });
+
+                loadIssues(e.target.dataset.filter);
+            }
+        });
+        
+        // --- Modal Functionality ---
+        const reportIssueBtn = document.getElementById('report-issue-btn');
+        const issueModal = document.getElementById('issue-modal');
+        const modalContent = document.getElementById('modal-content');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+
+        const openModal = () => {
+            issueModal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('opacity-0', '-translate-y-10');
+            }, 10);
+        };
+
+        const closeModal = () => {
+            modalContent.classList.add('opacity-0', '-translate-y-10');
+            setTimeout(() => issueModal.classList.add('hidden'), 300);
+        };
+
+        reportIssueBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+        issueModal.addEventListener('click', (e) => e.target === issueModal && closeModal());
+        document.addEventListener('keydown', (e) => e.key === 'Escape' && !issueModal.classList.contains('hidden') && closeModal());
+
+        // --- Initial Load Simulation ---
+        setTimeout(() => {
+            skeletonCards.forEach(card => card.remove());
+            loadIssues();
+        }, 1500); // Simulate network delay
+    });
+    </script>
+</body>
+</html>
